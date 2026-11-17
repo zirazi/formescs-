@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Les formes</title>
+<link href="https://fonts.googleapis.com/css2?family=Comic+Neue&display=swap" rel="stylesheet">
+<style>
+:root{
+  --violet:#7B2CBF; --rouge:#E63946; --bleu:#1E6FD9; --expert:#2E1A5C;
+  --jaune:#FFD60A; --vert:#2DB84D;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0}
+body { font-family: "Comic Sans MS", "Comic Neue", cursive, sans-serif; background:#FFF8E1; color:#222; user-select:none; -webkit-user-select:none; touch-action:manipulation; overflow:hidden; }
+button{font-family:inherit;cursor:pointer;border:none}
+.hidden{display:none !important}
+.screen{height:100vh;height:100dvh;display:flex;flex-direction:column}
+
+/* ---------- Accueil ---------- */
+#home{align-items:center;justify-content:center;padding:2vmin;background:radial-gradient(circle at 20% 10%,#FFF3B0 0,#FFF8E1 45%,#E8F1FF 100%)}
+#home h1{margin:0 0 2.5vmin;font-size:clamp(2.4rem,9vmin,5.5rem);letter-spacing:.08em;text-shadow:3px 3px 0 rgba(0,0,0,.12)}
+#home h1 span:nth-child(5n+1){color:var(--violet)}
+#home h1 span:nth-child(5n+2){color:var(--rouge)}
+#home h1 span:nth-child(5n+3){color:var(--bleu)}
+#home h1 span:nth-child(5n+4){color:#F29F05}
+#home h1 span:nth-child(5n+5){color:#2DB84D}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:2.5vmin;width:min(94vw,1000px);flex:0 1 auto;max-height:78vh}
+.tile{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1vmin;padding:2vmin 1.5vmin;border-radius:28px;color:#fff;font-size:clamp(1.1rem,3.6vmin,2.2rem);font-weight:bold;text-align:center;box-shadow:0 8px 0 rgba(0,0,0,.25);transition:transform .1s;min-height:22vh}
+.tile:active{transform:translateY(6px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.tile svg{width:min(34vmin,200px);height:auto;max-height:18vh;background:rgba(255,255,255,.18);border-radius:18px}
+.t1{background:var(--violet)} .t2{background:var(--rouge)} .t3{background:var(--bleu)} .t4{background:var(--expert);border:5px solid #FFD60A}
+
+/* ---------- Jeu ---------- */
+#game{background:#FFF8E1}
+.nav{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:8px 10px;background:#fff;border-bottom:4px solid #eee}
+.nav .left{display:flex;gap:8px;justify-self:start}
+.nav .right{justify-self:end}
+.nbtn{display:flex;align-items:center;gap:8px;padding:6px 14px 6px 8px;min-height:56px;border-radius:16px;background:#F1F3F8;font-size:clamp(.9rem,2.6vmin,1.25rem);font-weight:bold;color:#222;box-shadow:0 4px 0 rgba(0,0,0,.18)}
+.nbtn:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.18)}
+.nbtn svg{width:40px;height:40px;flex:none}
+#score{justify-self:center;font-size:clamp(1rem,3.2vmin,1.7rem);font-weight:bold;text-align:center;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.chip{padding:4px 10px;border-radius:14px;color:#fff;font-size:clamp(.8rem,2.4vmin,1.15rem);white-space:nowrap}
+.frame{display:inline-block;padding:4px 18px;border-radius:16px;background:#F4EEFF;border:3px solid #D9CCF2;font-size:clamp(1.1rem,3.4vmin,1.7rem);font-weight:bold;color:#444;min-width:70px}
+.comp button.done{opacity:.35}
+.comp button.done::after{content:' ✓'}
+.comp{display:flex;gap:10px;justify-content:center;padding:8px 10px 0}
+.comp button{flex:1;max-width:260px;min-height:54px;border-radius:16px;color:#fff;font-size:clamp(1rem,3vmin,1.5rem);font-weight:bold;opacity:.55;box-shadow:0 4px 0 rgba(0,0,0,.25);border:4px solid transparent}
+.comp button.active{opacity:1;border-color:#222;transform:translateY(-2px)}
+.stage{flex:1;min-height:0;position:relative;display:flex;align-items:center;justify-content:center;margin:8px 12px;border-radius:24px;background:#fff;border:6px solid #E3E7F0;transition:border-color .08s}
+.stage.ok{border-color:var(--vert)} .stage.ko{border-color:var(--rouge)}
+#svg{width:100%;height:100%;touch-action:manipulation}
+.fb{position:absolute;width:min(26vmin,160px);height:min(26vmin,160px);border-radius:50%;display:none;align-items:center;justify-content:center;font-size:min(16vmin,100px);color:#fff;font-weight:bold;pointer-events:none;opacity:.92}
+.fb.ok{display:flex;background:var(--vert)} .fb.ko{display:flex;background:var(--rouge)}
+#answers{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:6px 10px 12px}
+.abtn{min-width:clamp(60px,10vmin,96px);min-height:clamp(60px,11vmin,96px);padding:0 14px;border-radius:20px;color:#fff;font-size:clamp(1.8rem,6vmin,3.2rem);font-weight:bold;box-shadow:0 6px 0 rgba(0,0,0,.28)}
+.abtn.wide{min-width:min(42vw,340px);font-size:clamp(1.3rem,4.4vmin,2.4rem)}
+.abtn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.28)}
+.abtn.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.c-cotes{background:var(--violet)} .c-sommets{background:var(--rouge)} .c-convexe{background:var(--bleu)}
+
+/* ---------- Fenêtres ---------- */
+.overlay{position:fixed;inset:0;background:rgba(20,20,40,.55);display:flex;align-items:center;justify-content:center;z-index:50;padding:12px}
+.card{background:#fff;border-radius:26px;padding:22px 24px;width:min(92vw,560px);max-height:92vh;overflow:auto;box-shadow:0 14px 40px rgba(0,0,0,.35);text-align:center}
+.card h2{margin:0 0 12px;font-size:clamp(1.4rem,4.4vmin,2.2rem)}
+.card p.txt{font-size:clamp(1.2rem,3.6vmin,1.8rem);line-height:1.4;margin:10px 0 18px}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.btn{padding:12px 20px;min-height:54px;border-radius:16px;font-size:clamp(1rem,3vmin,1.4rem);font-weight:bold;color:#fff;box-shadow:0 4px 0 rgba(0,0,0,.25)}
+.btn.gris{background:#6B7280} .btn.vert{background:var(--vert)} .btn.bleu{background:var(--bleu)} .btn.orange{background:#F29F05}
+.big{font-size:clamp(1.3rem,4vmin,2rem);font-weight:bold;margin:6px 0}
+.pct{font-size:clamp(2rem,7vmin,3.4rem);font-weight:bold;color:var(--bleu);margin:6px 0}
+.res-frac{font-size:clamp(3rem,12vmin,5.5rem);font-weight:bold;color:#333;margin:4px 0}
+.res-pct{font-size:clamp(.9rem,2.4vmin,1.1rem);color:#777;margin:0 0 6px}
+.res-msg{font-size:clamp(.85rem,2.3vmin,1.05rem);color:#888;margin:6px 0 16px;line-height:1.35}
+.msg{font-size:clamp(1.1rem,3.2vmin,1.5rem);margin:12px 0 16px;line-height:1.4}
+.comp-bloc{text-align:left;margin:12px 0;padding:10px 12px;border-radius:16px;background:#F7F7FB;border-left:10px solid}
+.comp-bloc h3{margin:0 0 4px;font-size:clamp(1.2rem,3.6vmin,1.7rem)}
+.comp-bloc .l{font-size:clamp(.95rem,2.8vmin,1.2rem);margin:2px 0}
+.bar{height:10px;background:#E5E7EB;border-radius:10px;overflow:hidden;margin:6px 0 2px}
+.bar i{display:block;height:100%;border-radius:10px}
+</style>
+</head>
+<body>
+
+<!-- ACCUEIL -->
+<div id="home" class="screen">
+  <h1 id="titre"></h1>
+  <div class="grid">
+    <button class="tile t1" data-lvl="1"><svg id="ill1" viewBox="0 0 120 100"></svg>LES CÔTÉS</button>
+    <button class="tile t2" data-lvl="2"><svg id="ill2" viewBox="0 0 120 100"></svg>LES SOMMETS</button>
+    <button class="tile t3" data-lvl="3"><svg id="ill3" viewBox="0 0 120 100"></svg>CONVEXE / NON CONVEXE</button>
+    <button class="tile t4" data-lvl="4"><svg id="ill4" viewBox="0 0 120 100"></svg>EXPERT</button>
+  </div>
+</div>
+
+<!-- JEU -->
+<div id="game" class="screen hidden">
+  <header class="nav">
+    <div class="left">
+      <button class="nbtn" id="btnHome" aria-label="Accueil">
+        <svg viewBox="0 0 40 40"><polygon points="20,4 3,20 37,20" fill="#E63946" stroke="#222" stroke-width="2" stroke-linejoin="round"/><rect x="8" y="20" width="24" height="16" fill="#FFD60A" stroke="#222" stroke-width="2"/><rect x="17" y="26" width="7" height="10" fill="#8D5524" stroke="#222" stroke-width="1.5"/></svg>
+      </button>
+      <button class="nbtn" id="btnHelp" aria-label="Consigne">
+        <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17" fill="#1E6FD9" stroke="#222" stroke-width="2"/><text x="20" y="28" font-size="24" font-weight="bold" fill="#fff" text-anchor="middle" font-family="Comic Sans MS, Comic Neue, cursive">?</text></svg>
+        Consigne
+      </button>
+    </div>
+    <div id="score"></div>
+    <div class="right">
+      <button class="nbtn" id="btnRes">
+        <svg viewBox="0 0 40 40"><rect x="5" y="22" width="8" height="14" fill="#7B2CBF" stroke="#222" stroke-width="2"/><rect x="16" y="12" width="8" height="24" fill="#E63946" stroke="#222" stroke-width="2"/><rect x="27" y="4" width="8" height="32" fill="#1E6FD9" stroke="#222" stroke-width="2"/></svg>
+        Résultats
+      </button>
+    </div>
+  </header>
+  <div id="comp" class="comp hidden">
+    <button class="c-cotes" data-mode="cotes">CÔTÉS</button>
+    <button class="c-sommets" data-mode="sommets">SOMMETS</button>
+    <button class="c-convexe" data-mode="convexe">CONVEXITÉ</button>
+  </div>
+  <main class="stage" id="stage">
+    <svg id="svg" viewBox="0 0 400 400"></svg>
+    <div class="fb" id="fb"></div>
+  </main>
+  <footer id="answers"></footer>
+</div>
+
+<!-- CONSIGNE -->
+<div id="mHelp" class="overlay hidden">
+  <div class="card">
+    <h2>Consigne</h2>
+    <p class="txt" id="helpTxt"></p>
+    <div class="row">
+      <button class="btn bleu" id="btnSpeak">🔊 Écouter</button>
+      <button class="btn gris" id="btnCloseHelp">Fermer</button>
+    </div>
+  </div>
+</div>
+
+<!-- RÉSULTATS -->
+<div id="mRes" class="overlay hidden">
+  <div class="card" id="resCard"></div>
+</div>
+
+<script>
+/*GEOM_START*/
+const R = Math.random;
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function rint(a,b){return a+Math.floor(R()*(b-a+1))}
+
+function segDist(p,a,b){
+  const dx=b.x-a.x,dy=b.y-a.y,l2=dx*dx+dy*dy;
+  let t=l2?((p.x-a.x)*dx+(p.y-a.y)*dy)/l2:0; t=Math.max(0,Math.min(1,t));
+  return Math.hypot(p.x-(a.x+t*dx),p.y-(a.y+t*dy));
+}
+function inPoly(p,poly){
+  let c=false;
+  for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+    const a=poly[i],b=poly[j];
+    if((a.y>p.y)!==(b.y>p.y) && p.x<(b.x-a.x)*(p.y-a.y)/(b.y-a.y)+a.x) c=!c;
+  }
+  return c;
+}
+function distToPolyBoundary(p,poly){
+  let m=1e9;
+  for(let i=0;i<poly.length;i++) m=Math.min(m,segDist(p,poly[i],poly[(i+1)%poly.length]));
+  return m;
+}
+function ccw(a,b,c){return (c.y-a.y)*(b.x-a.x)-(b.y-a.y)*(c.x-a.x)}
+function segInter(a,b,c,d){
+  const d1=ccw(a,b,c),d2=ccw(a,b,d),d3=ccw(c,d,a),d4=ccw(c,d,b);
+  return ((d1>0)!==(d2>0)) && ((d3>0)!==(d4>0));
+}
+function analyze(pts){
+  const n=pts.length; let area=0;
+  for(let i=0;i<n;i++){const a=pts[i],b=pts[(i+1)%n];area+=a.x*b.y-b.x*a.y}
+  const s=area>0?1:-1, turns=[];
+  for(let i=0;i<n;i++){
+    const p=pts[(i+n-1)%n],v=pts[i],q=pts[(i+1)%n];
+    const e1x=v.x-p.x,e1y=v.y-p.y,e2x=q.x-v.x,e2y=q.y-v.y;
+    turns.push(s*Math.atan2(e1x*e2y-e1y*e2x,e1x*e2x+e1y*e2y)*180/Math.PI);
+  }
+  return {turns};
+}
+function hullIdx(pts){
+  const idx=pts.map((_,i)=>i).sort((a,b)=>pts[a].x-pts[b].x||pts[a].y-pts[b].y);
+  const cr=(o,a,b)=>(pts[a].x-pts[o].x)*(pts[b].y-pts[o].y)-(pts[a].y-pts[o].y)*(pts[b].x-pts[o].x);
+  const lo=[];for(const i of idx){while(lo.length>=2&&cr(lo[lo.length-2],lo[lo.length-1],i)<=0)lo.pop();lo.push(i)}
+  const up=[];for(const i of idx.slice().reverse()){while(up.length>=2&&cr(up[up.length-2],up[up.length-1],i)<=0)up.pop();up.push(i)}
+  lo.pop();up.pop();
+  return lo.concat(up).sort((a,b)=>a-b);
+}
+function getPockets(pts){
+  const n=pts.length,h=hullIdx(pts),out=[];
+  for(let k=0;k<h.length;k++){
+    const i=h[k],j=h[(k+1)%h.length];
+    if((i+1)%n!==j){
+      const arr=[i];let x=i;while(x!==j){x=(x+1)%n;arr.push(x)}
+      out.push(arr.map(t=>pts[t]));
+    }
+  }
+  return out;
+}
+const CLEAR=17; // dégagement nécessaire pour la petite souris
+function validate(pts,convex){
+  const n=pts.length;
+  for(let i=0;i<n;i++) if(Math.hypot(pts[i].x-pts[(i+1)%n].x,pts[i].y-pts[(i+1)%n].y)<50) return false;
+  const {turns}=analyze(pts);
+  let reflex=0;
+  for(const t of turns){
+    if(t>=10&&t<=150) continue;
+    if(!convex&&t<=-15&&t>=-140){reflex++;continue}
+    return false;
+  }
+  if(convex&&reflex) return false;
+  if(!convex&&!reflex) return false;
+  for(let i=0;i<n;i++){
+    for(let j=i+2;j<n;j++){
+      if(i===0&&j===n-1) continue;
+      if(Math.hypot(pts[i].x-pts[j].x,pts[i].y-pts[j].y)<45) return false;
+    }
+    for(let j=0;j<n;j++){
+      if(j===i||(j+1)%n===i) continue;
+      if(segDist(pts[i],pts[j],pts[(j+1)%n])<24) return false;
+    }
+  }
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++){
+    if(j===i+1||(i===0&&j===n-1)) continue;
+    if(segInter(pts[i],pts[(i+1)%n],pts[j],pts[(j+1)%n])) return false;
+  }
+  if(!convex){
+    for(const pk of getPockets(pts)){
+      let xs=pk.map(p=>p.x),ys=pk.map(p=>p.y),ok=false;
+      const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+      for(let x=x0;x<=x1&&!ok;x+=5)for(let y=y0;y<=y1&&!ok;y+=5){
+        const p={x,y};
+        if(inPoly(p,pk)&&!inPoly(p,pts)&&distToPolyBoundary(p,pts)>=CLEAR) ok=true;
+      }
+      if(!ok) return false;
+    }
+  }
+  return true;
+}
+function normalize(pts){
+  const xs=pts.map(p=>p.x),ys=pts.map(p=>p.y);
+  const x0=Math.min(...xs),x1=Math.max(...xs),y0=Math.min(...ys),y1=Math.max(...ys);
+  const s=330/Math.max(x1-x0,y1-y0), cx=(x0+x1)/2, cy=(y0+y1)/2;
+  return pts.map(p=>({x:200+(p.x-cx)*s,y:200+(p.y-cy)*s}));
+}
+function fallbackShape(convex,n){
+  if(!convex) return [{x:60,y:60},{x:200,y:60},{x:200,y:200},{x:340,y:200},{x:340,y:340},{x:60,y:340}];
+  const pts=[];for(let i=0;i<n;i++){const a=-Math.PI/2+i*2*Math.PI/n;pts.push({x:200+160*Math.cos(a),y:200+160*Math.sin(a)})}
+  return pts;
+}
+function buildShape(n,convex){
+  if(!convex&&n<4) n=4;
+  for(let t=0;t<2500;t++){
+    const jit=convex?0.30:0.35;
+    let gaps=Array.from({length:n},()=>1+(R()*2-1)*jit);
+    const sum=gaps.reduce((a,b)=>a+b,0); gaps=gaps.map(g=>g*2*Math.PI/sum);
+    let ang=R()*2*Math.PI; const angles=[];
+    for(const g of gaps){angles.push(ang);ang+=g}
+    const rad=new Array(n).fill(1);
+    if(convex){
+      const amp=n<=4?0.18:n<=6?0.10:n<=8?0.05:0.025;
+      for(let i=0;i<n;i++) rad[i]=1+(R()*2-1)*amp;
+    }else{
+      const kmax=Math.max(1,Math.min(3,Math.floor(n/2)-1));
+      const k=rint(1,kmax), chosen=[];
+      for(const i of shuffle([...Array(n).keys()])){
+        if(chosen.length>=k) break;
+        if(chosen.every(c=>(c+1)%n!==i&&(i+1)%n!==c&&c!==i)) chosen.push(i);
+      }
+      for(let i=0;i<n;i++) rad[i]=chosen.includes(i)?0.38+R()*0.22:0.85+R()*0.3;
+    }
+    if(!convex&&n===4){ // flèche (« dart ») : pointe, deux ailes, un creux
+      const d=Math.PI/180, a1=rint(105,140)*d, a2=rint(105,140)*d, ar=(180+rint(-20,20))*d;
+      angles.length=0; angles.push(0,a1,ar,2*Math.PI-a2);
+      rad[0]=0.9+R()*0.2; rad[1]=0.8+R()*0.25; rad[2]=0.2+R()*0.25; rad[3]=0.8+R()*0.25;
+    }
+    const sx=0.65+R()*0.7, rot=R()*2*Math.PI, cs=Math.cos(rot), sn=Math.sin(rot);
+    let pts=angles.map((a,i)=>({x:Math.cos(a)*rad[i]*sx,y:Math.sin(a)*rad[i]}));
+    pts=pts.map(p=>({x:p.x*cs-p.y*sn,y:p.x*sn+p.y*cs}));
+    pts=normalize(pts);
+    if(validate(pts,convex)) return {pts,convex,fallback:false};
+  }
+  return {pts:fallbackShape(convex,n),convex,fallback:true};
+}
+function pocketsOf(shape){return shape.convex?[]:getPockets(shape.pts)}
+/*GEOM_END*/
+
+/* ================= Données ================= */
+const COL={violet:'#7B2CBF',rouge:'#E63946',bleu:'#1E6FD9',jaune:'#FFD60A'};
+const CAT={
+  cotes:{nom:'NOMBRE DE CÔTÉS',court:'Côtés',color:COL.violet},
+  sommets:{nom:'NOMBRE DE SOMMETS',court:'Sommets',color:COL.rouge},
+  convexe:{nom:'CONVEXE / NON CONVEXE',court:'Convexité',color:COL.bleu}
+};
+const CONSIGNES={
+  1:"Compte les côtés de la forme. Tu peux toucher les côtés pour t'aider. Puis appuie sur le bon nombre.",
+  2:"Compte les sommets de la forme. Un sommet est un coin. Tu peux toucher les coins pour t'aider. Puis appuie sur le bon nombre.",
+  3:"Regarde la forme. Si elle a un creux, elle est non convexe : touche le creux, une souris apparaît, puis appuie sur NON CONVEXE. Si elle n'a pas de creux, appuie sur CONVEXE.",
+  4:"Choisis ce que tu veux travailler : les côtés, les sommets ou la convexité. Réponds, puis une nouvelle forme arrive."
+};
+const TOTAL=20;
+let level=0,S=null;
+
+/* ================= Illustrations ================= */
+function mouseSVG(x,y,s){
+  return `<g transform="translate(${x} ${y}) scale(${s})" pointer-events="none">
+  <circle cx="-11" cy="-11" r="8" fill="#F7A8B8" stroke="#444" stroke-width="2"/>
+  <circle cx="11" cy="-11" r="8" fill="#F7A8B8" stroke="#444" stroke-width="2"/>
+  <ellipse cx="0" cy="0" rx="15" ry="13" fill="#CFCFD8" stroke="#444" stroke-width="2"/>
+  <circle cx="-5" cy="-3" r="2" fill="#111"/><circle cx="5" cy="-3" r="2" fill="#111"/>
+  <circle cx="0" cy="3" r="2.6" fill="#F2698A"/>
+  <path d="M-7 6 L-18 8 M-7 8 L-18 12 M7 6 L18 8 M7 8 L18 12" stroke="#444" stroke-width="1.2" fill="none"/></g>`;
+}
+const P=(pts)=>pts.map(p=>p.join(',')).join(' ');
+function fillHome(){
+  document.getElementById('titre').innerHTML='LES FORMES'.split('').map(c=>c===' '?'&nbsp;':`<span>${c}</span>`).join('');
+  const pent=[[60,10],[100,38],[85,86],[35,86],[20,38]];
+  document.getElementById('ill1').innerHTML=`<polygon points="${P(pent)}" fill="${COL.jaune}" stroke="#111" stroke-width="4" stroke-linejoin="round"/><line x1="100" y1="38" x2="85" y2="86" stroke="${COL.violet}" stroke-width="8"/><line x1="85" y1="86" x2="35" y2="86" stroke="${COL.violet}" stroke-width="8"/>`;
+  const tri=[[60,12],[104,86],[16,86]];
+  document.getElementById('ill2').innerHTML=`<polygon points="${P(tri)}" fill="${COL.jaune}" stroke="#111" stroke-width="4" stroke-linejoin="round"/>`+tri.map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="10" fill="none" stroke="${COL.rouge}" stroke-width="4"/>`).join('');
+  const arrow=[[15,15],[105,15],[70,50],[105,85],[15,85],[40,50]];
+  document.getElementById('ill3').innerHTML=`<polygon points="${P([[10,12],[110,12],[70,50],[110,88],[10,88]])}" fill="${COL.jaune}" stroke="#111" stroke-width="4" stroke-linejoin="round"/>`+mouseSVG(88,50,.8);
+  const U=[[10,90],[10,15],[40,15],[40,45],[80,45],[80,15],[110,15],[110,90]];
+  document.getElementById('ill4').innerHTML=`<polygon points="${P(U)}" fill="${COL.jaune}" stroke="#111" stroke-width="4" stroke-linejoin="round"/><line x1="110" y1="15" x2="110" y2="90" stroke="${COL.violet}" stroke-width="8"/><circle cx="10" cy="90" r="10" fill="none" stroke="${COL.rouge}" stroke-width="4"/>`+mouseSVG(60,31,.75);
+}
+
+/* ================= Exercices ================= */
+function makeExercises(l){
+  const ex=[];
+  if(l===1||l===2){
+    const ns=shuffle([3,4,5,6,7,8,9,10,3,4,5,6,7,8,9,10,rint(3,10),rint(3,10),rint(3,10),rint(3,10)]);
+    for(const n of ns){const convex=n===3?true:R()<.5;ex.push(buildShape(n,convex))}
+  }else if(l===3){
+    const types=shuffle([...Array(10).fill(true),...Array(10).fill(false)]);
+    for(const convex of types) ex.push(buildShape(convex?rint(3,10):rint(4,10),convex));
+  }else{
+    let order=[];
+    for(let i=0;i<TOTAL;i++){
+      if(i%3===0) order=shuffle(['cotes','sommets','convexe']);
+      const convex=R()<.5, n=rint(3,10);
+      const sh=buildShape(convex?n:Math.max(4,n),convex);
+      sh.planned=order[i%3];
+      ex.push(sh);
+    }
+  }
+  ex.forEach(e=>{e.answer=e.pts.length;e.pockets=pocketsOf(e)});
+  return ex;
+}
+
+/* ================= Démarrage ================= */
+const $=id=>document.getElementById(id);
+function startLevel(l){
+  level=l;
+  S={ex:makeExercises(l),i:0,locked:false,finished:false,mode:null,
+     stats:{cotes:{ok:0,ko:0},sommets:{ok:0,ko:0},convexe:{ok:0,ko:0}},
+     sel:null};
+  $('home').classList.add('hidden');
+  $('game').classList.remove('hidden');
+  $('comp').classList.toggle('hidden',l!==4);
+  $('mHelp').classList.add('hidden');$('mRes').classList.add('hidden');
+  $('helpTxt').textContent=CONSIGNES[l];
+  loadExercise();
+}
+function levelMode(){return level===1?'cotes':level===2?'sommets':level===3?'convexe':S.mode}
+function loadExercise(){
+  const e=S.ex[S.i];
+  S.sel={sides:new Set(),verts:new Set(),mice:new Map()};
+  if(level===4){S.mode='cotes';S.done=new Set()}
+  $('stage').className='stage';$('fb').className='fb';
+  setupComp();renderAnswers();renderShape();renderScore();
+}
+function setupComp(){
+  if(level!==4) return;
+  document.querySelectorAll('#comp button').forEach(b=>{b.classList.toggle('active',b.dataset.mode===S.mode);b.classList.toggle('done',S.done.has(b.dataset.mode))});
+}
+
+/* ================= Dessin ================= */
+function renderShape(){
+  const e=S.ex[S.i],pts=e.pts,n=pts.length,mode=levelMode();
+  let h=`<polygon points="${pts.map(p=>p.x.toFixed(1)+','+p.y.toFixed(1)).join(' ')}" fill="${COL.jaune}" stroke="#111" stroke-width="6" stroke-linejoin="round"/>`;
+  for(const i of S.sel.sides){
+    const a=pts[i],b=pts[(i+1)%n];
+    h+=`<line x1="${a.x}" y1="${a.y}" x2="${b.x}" y2="${b.y}" stroke="${COL.violet}" stroke-width="9" stroke-linecap="butt"/>`;
+  }
+  for(const i of S.sel.verts){
+    h+=`<circle cx="${pts[i].x}" cy="${pts[i].y}" r="17" fill="none" stroke="${COL.rouge}" stroke-width="5"/>`;
+  }
+  if(mode==='convexe') for(const m of S.sel.mice.values()) h+=mouseSVG(m.x,m.y,.9);
+  $('svg').innerHTML=h;
+}
+function svgPoint(ev){
+  const svg=$('svg'),pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+
+/* ================= Interaction ================= */
+function hitSide(p,pts){
+  const n=pts.length;let best=-1,bd=26;
+  for(let i=0;i<n;i++){
+    const a=pts[i],b=pts[(i+1)%n],dx=b.x-a.x,dy=b.y-a.y,l2=dx*dx+dy*dy;
+    const t=((p.x-a.x)*dx+(p.y-a.y)*dy)/l2;
+    if(t<0.2||t>0.8) continue;
+    const d=Math.hypot(p.x-(a.x+t*dx),p.y-(a.y+t*dy));
+    if(d<bd){bd=d;best=i}
+  }
+  return best;
+}
+function hitVertex(p,pts){
+  let best=-1,bd=30;
+  pts.forEach((v,i)=>{const d=Math.hypot(p.x-v.x,p.y-v.y);if(d<bd){bd=d;best=i}});
+  return best;
+}
+function hitPocket(p,e){
+  if(inPoly(p,e.pts)) return -1;
+  for(let k=0;k<e.pockets.length;k++){
+    const pk=e.pockets[k];
+    if(inPoly(p,pk)||distToPolyBoundary(p,pk)<=10) return k;
+  }
+  return -1;
+}
+function placeMouse(p,e){
+  let best=null,bd=1e9;
+  for(let dx=-34;dx<=34;dx+=2)for(let dy=-34;dy<=34;dy+=2){
+    const q={x:p.x+dx,y:p.y+dy};
+    if(inPoly(q,e.pts)) continue;
+    if(!e.pockets.some(pk=>inPoly(q,pk))) continue;
+    if(distToPolyBoundary(q,e.pts)<CLEAR) continue;
+    const d=Math.hypot(dx,dy);
+    if(d<bd){bd=d;best=q}
+  }
+  return best||p;
+}
+$('svg').addEventListener('pointerdown',ev=>{
+  if(!S||S.locked) return;
+  ev.preventDefault();
+  const e=S.ex[S.i],p=svgPoint(ev),mode=levelMode();
+  if(mode==='cotes'){
+    const i=hitSide(p,e.pts);
+    if(i>=0&&!S.sel.sides.has(i)){S.sel.sides.add(i);renderShape()}
+  }else if(mode==='sommets'){
+    const i=hitVertex(p,e.pts);
+    if(i>=0&&!S.sel.verts.has(i)){S.sel.verts.add(i);renderShape()}
+  }else if(mode==='convexe'){
+    const k=hitPocket(p,e);
+    if(k>=0){
+      const q=S.sel.mice.has(k)?S.sel.mice.get(k):placeMouse(p,e);
+      S.sel.mice.set(k,q);renderShape();
+    }
+  }
+});
+
+/* ================= Réponses ================= */
+function renderAnswers(){
+  const mode=levelMode(),box=$('answers');
+  let h='';
+  if(mode==='convexe'){
+    h=`<button class="abtn wide c-convexe" data-v="C">CONVEXE</button><button class="abtn wide c-convexe" data-v="N">NON CONVEXE</button>`;
+  }else{
+    for(let n=3;n<=10;n++) h+=`<button class="abtn c-${mode}" data-v="${n}">${n}</button>`;
+  }
+  box.innerHTML=h;
+}
+$('answers').addEventListener('click',ev=>{
+  const b=ev.target.closest('.abtn');
+  if(!b||!S||S.locked) return;
+  answer(b.dataset.v,b);
+});
+function answer(v,btn){
+  const e=S.ex[S.i],mode=levelMode();
+  let good;
+  if(mode==='convexe'){
+    if(v==='C') good=e.convex;
+    else{
+      if(!e.convex&&S.sel.mice.size===0){
+        btn.classList.remove('shake');void btn.offsetWidth;btn.classList.add('shake');
+        return;
+      }
+      good=!e.convex;
+    }
+  }else good=(+v===e.answer);
+  S.stats[mode][good?'ok':'ko']++;
+  if(level===4) S.done.add(mode);
+  S.locked=true;
+  $('stage').className='stage '+(good?'ok':'ko');
+  const fb=$('fb');fb.className='fb '+(good?'ok':'ko');fb.textContent=good?'✓':'✗';
+  renderScore();
+  setTimeout(()=>{
+    S.locked=false;
+    if(level===4&&S.done.size<3){
+      S.mode=['cotes','sommets','convexe'].find(m=>!S.done.has(m));
+      $('stage').className='stage';$('fb').className='fb';
+      setupComp();renderAnswers();renderShape();return;
+    }
+    if(S.i>=TOTAL-1){S.finished=true;$('stage').className='stage';$('fb').className='fb';showResults()}
+    else{S.i++;loadExercise()}
+  },500);
+}
+
+/* ================= Score ================= */
+function renderScore(){
+  const el=$('score');
+  if(level!==4){
+    const st=S.stats[levelMode()];
+    el.innerHTML=`<span class="frame">${st.ok}/${st.ok+st.ko}</span>`;
+  }else{
+    el.innerHTML=Object.keys(CAT).map(k=>{
+      const st=S.stats[k];
+      return `<span class="chip" style="background:${CAT[k].color}">${CAT[k].court} : ${st.ok}/${st.ok+st.ko}</span>`;
+    }).join('');
+  }
+}
+
+/* ================= Résultats ================= */
+function msgFor(p){
+  if(p>=80) return "Quel beau travail ! Continue comme ça, tu peux être fier de toi !";
+  if(p>=60) return "Bravo pour tes efforts ! Continue à t'entraîner, tu es sur la bonne voie !";
+  return "Encore un petit effort ! Prends le temps de bien observer les formes. Tu vas progresser !";
+}
+function showResults(){
+  const card=$('resCard');let h='';
+  if(level!==4){
+    const st=S.stats[levelMode()],t=st.ok+st.ko;
+    h+=`<h2>RÉSULTAT</h2><div class="res-frac">${st.ok}/${t}</div>`;
+    if(t){const p=Math.round(st.ok/t*100);h+=`<div class="res-pct">${p} % de réussite</div><p class="res-msg">${msgFor(p)}</p>`}
+  }else{
+    const noms={cotes:'Nombre de côtés',sommets:'Nombre de sommets',convexe:'Convexe / non convexe'};
+    h+=`<h2>BILAN EXPERT</h2>`;
+    for(const k of Object.keys(CAT)){
+      const st=S.stats[k],t=st.ok+st.ko,p=t?Math.round(st.ok/t*100):0;
+      h+=`<div class="comp-bloc" style="border-color:${CAT[k].color}"><h3 style="color:${CAT[k].color}">${noms[k]} : ${st.ok}/${t}</h3><div class="bar"><i style="width:${p}%;background:${CAT[k].color}"></i></div></div>`;
+    }
+  }
+  h+=`<div class="row">`;
+  if(!S.finished) h+=`<button class="btn vert" id="btnResume">▶ Reprendre</button>`;
+  h+=`<button class="btn orange" id="btnRestart">↻ Recommencer</button></div>`;
+  card.innerHTML=h;
+  $('mRes').classList.remove('hidden');
+  const r=$('btnResume');if(r) r.onclick=()=>$('mRes').classList.add('hidden');
+  $('btnRestart').onclick=()=>startLevel(level);
+}
+
+/* ================= Navigation & consigne ================= */
+document.querySelectorAll('.tile').forEach(t=>t.addEventListener('click',()=>startLevel(+t.dataset.lvl)));
+$('btnHome').addEventListener('click',()=>{
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  $('game').classList.add('hidden');$('home').classList.remove('hidden');
+  $('mHelp').classList.add('hidden');$('mRes').classList.add('hidden');S=null;
+});
+$('btnHelp').addEventListener('click',()=>$('mHelp').classList.remove('hidden'));
+$('btnCloseHelp').addEventListener('click',()=>{
+  if('speechSynthesis' in window) speechSynthesis.cancel();
+  $('mHelp').classList.add('hidden');
+});
+$('btnSpeak').addEventListener('click',()=>{
+  if(!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(CONSIGNES[level]);
+  u.lang='fr-FR';u.rate=0.85;
+  const v=speechSynthesis.getVoices().find(v=>v.lang&&v.lang.toLowerCase().startsWith('fr'));
+  if(v) u.voice=v;
+  speechSynthesis.speak(u);
+});
+$('btnRes').addEventListener('click',()=>{if(S) showResults()});
+document.querySelectorAll('#comp button').forEach(b=>b.addEventListener('click',()=>{
+  if(!S||S.locked) return;
+  if(S.done.has(b.dataset.mode)) return;
+  S.mode=b.dataset.mode;setupComp();renderAnswers();renderShape();
+}));
+/* Raccourcis enseignant : Ctrl+→ ignore l'exercice, Ctrl+← revient en arrière (score inchangé) */
+document.addEventListener('keydown',ev=>{
+  if(!S||S.locked||!ev.ctrlKey) return;
+  if(!$('mRes').classList.contains('hidden')||!$('mHelp').classList.contains('hidden')) return;
+  if(ev.key==='ArrowRight'&&S.i<TOTAL-1){ev.preventDefault();S.i++;loadExercise()}
+  else if(ev.key==='ArrowLeft'&&S.i>0){ev.preventDefault();S.i--;loadExercise()}
+});
+document.addEventListener('contextmenu',e=>e.preventDefault());
+fillHome();
+</script>
+</body>
+</html>
